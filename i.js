@@ -1,10 +1,11 @@
 
 var log = console.log
-import {x} from './audio.js'
+import audio from './audio.js'
 
 function sayhi() {
 	log('hi,,,')
-	x()
+	log(audio.oldTime)
+	audio.play(0)
 }
 sayhi()
 // export default sayhi
