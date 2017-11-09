@@ -27,6 +27,7 @@ req.onload = function() {
 		function(buf) {
 			log('### buf: ', buf)
 
+			var status = null
 			var currentTime = 0
 			var proceessTime = 0
 			var curt = 0
@@ -36,6 +37,7 @@ req.onload = function() {
 			var oldTime = new Date()
 
 			// play(offset)
+			    status = 'play'
 				// _readFormCurrentBuffer();//读取当前buffer中的音源
 					// _initNode();//新建音源节点
 						var sourceNode = context.createBufferSource() //创建音源节点，用于读取音源	
@@ -48,7 +50,21 @@ req.onload = function() {
 							log("读取当前buffer完毕")
 							oldTime = new Date()
 				sourceNode.onended = function(event) {
-					log('music end.')
+						// _disconnectNode() //断开连接
+							try {
+								scriptProcessorNode.onaudioprocess = null
+								sourceNode.onended = null
+								sourceNode.disconnect(scriptProcessorNode) //旧节点断开连接
+								scriptProcessorNode.disconnect(context.destination) //旧节点断开连接						
+								delete sourceNode.buffer
+								sourceNode = null
+								scriptProcessorNode = null
+							} catch(e) {
+								log('### error: ', e)
+							}
+						currentTime = 0
+						status = 'stop'
+						log("播放完毕")
 				}
 
 				scriptProcessorNode.onaudioprocess = function(event){
