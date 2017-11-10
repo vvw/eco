@@ -2,7 +2,7 @@ const context = new AudioContext()
 var buffer = null
 var sourceNode = null
 var scriptProcessorNode = null
-var status = null
+var status = null //ready,loading,playing,pause,init
 var duration = null
 var currentTime = 0
 var proceessTime = 0
@@ -71,7 +71,7 @@ function setUpEvents() {
 		s = parseInt(curt % 60)
 		oldTime = now
 
-		log(m, s, curt)
+		log(m, s, curt, currentTime)
 
 		if (proceessTime > 500) {
 			proceessTime = 0
@@ -80,12 +80,13 @@ function setUpEvents() {
 }
 
 function play(data) {
+	status = 'loading'
 	context.decodeAudioData(
 		data,
 		function(buf) {
 			log('### buf: ', buf)
 			buffer = buf
-			status = 'play'
+			status = 'init'
 				// _readFormCurrentBuffer();//读取当前buffer中的音源
 				// _initNode();//新建音源节点
 			initNode()
@@ -93,9 +94,17 @@ function play(data) {
 			duration = buf.duration
 			connectNode() //重新连接
 			log("读取当前buffer完毕")
-			oldTime = new Date()
 			setUpEvents() // 处理音频流事件，结束播放事件
-			
+			status = 'ready'
+
+			oldTime = new Date()
+			setTimeout(function() {
+				log('####### pause plz.')
+				setTimeout(function() {
+					log('####### pursue plz.')
+				}, 3000)
+			}, 3000)
+			status = 'playing' //ready,loading,playing,pause,init
 			sourceNode.start(0, 0, 15) // start offset how-long
 		}
 	)
